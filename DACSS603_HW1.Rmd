@@ -1,0 +1,168 @@
+---
+title: "DACSS 603 HW#1"
+description: |
+  First homework for DACSS 603.
+author:
+  - name: Alexander Hong 
+date: "`r Sys.Date()`"
+output: distill::distill_article
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = FALSE)
+```
+
+##Question 1
+
+1.  The time between the date a patient was recommended for heart surgery and the surgery date for cardiac patients in Ontario was collected by the Cardiac Care Network ("Wait Times Data Guide," Ministry of Health and Long-Term Care, Ontario, Canada, 2006). The sample mean and sample standard deviation for wait times (in days) of patients for two cardiac procedures are given in the accompanying table. Assume that the sample is representative of the Ontario population
+
+| Surgical Procedure | Sample Size | Mean Wait Time | Standard Deviation |
+|--------------------|-------------|----------------|--------------------|
+| Bypass             | 539         | 19             | 10                 |
+| Angiography        | 847         | 18             | 9                  |
+
+Construct the 90% confidence interval to estimate the actual mean wait time for each of the two procedures. Is the confidence interval narrower for angiography or bypass surgery?
+
+```{r q1, echo=TRUE}
+
+bypass_l <- 19 - (1.65 * (10/(539^.5)))
+bypass_h <- 19 + (1.65 * (10/(539^.5)))
+bypass_diff <- bypass_h - bypass_l
+
+angio_l <- 18 - (1.65 * (9/(847^.5)))
+angio_h <- 18 + (1.65 * (9/(847^.5)))
+angio_diff <- angio_h - angio_l
+```
+
+CI for Bypass $19 \pm 1.65 ( 10/sqrt(539) )$ \| Difference = `r bypass_diff`
+
+CI for Angiography $18 \pm 1.65 ( 9/sqrt(847) )$ \| Difference = `r angio_diff`
+
+The confidence interval is narrower for angiography surgery.
+
+##Question 2
+
+2.  A survey of 1031 adult Americans was carried out by the National Center for Public Policy. Assume that the sample is representative of adult Americans. Among those surveyed, 567 believed that college education is essential for success. Find the point estimate, p, of the proportion of all adult Americans who believe that a college education is essential for success. Construct and interpret a 95% confidence interval for p.
+
+```{r q2, echo=TRUE}
+p2 = 567 / 1031
+n2 = 1031
+z2 = 1.96
+
+p2_l <- p2 - (z2*(p2*(1-p2))^.5) / n2
+p2_h <- p2 + (z2*(p2*(1-p2))^.5) / n2
+
+```
+
+CI = $.55 \pm 1.96 * sqrt( .55 / 1 -.55 )$
+
+95% of confidence intervals calculated would contain If this survery is repeated as many times, it is expected that 95% of those confidence intervals will contain the proportion that almost 55% of adult Americans believe that college education is essential for success.
+
+##Question 3
+
+3.  Suppose that the financial aid office of UMass Amherst seeks to estimate the mean cost of textbooks per quarter for students. The estimate will be useful if it is within \$5 of the true population mean (i.e. they want the confidence interval to have a length of \$10 or less). The financial aid office is pretty sure that the amount spent on books varies widely, with most values between \$30 and \$200. They think that the population standard deviation is about a quarter of this range. Assuming the significance level to be 5%, what should be the size of the sample?
+
+z = 1.96 
+
+SD = \$170 \* .25 = \$42.5 (The quarter of the range is .25\*(200-30) )
+
+Mean = Assuming most of the book values of the mean is between \$30 and \$200, the mean can be derived from ( \$200 + \$30 / 2 ) = \$115
+
+```{r q3, echo=FALSE}
+
+xn = 277
+
+a1 <- 115 - 1.96 * (42.5 / xn ^ .5)
+
+a2 <- 115 + 1.96 * (42.5 / xn ^ .5)
+
+al <- round(a2 - a1, 2)
+```
+
+A sample size of 277 textbooks should be needed to estimate the mean cost of textbooks per quarter. Using this sample size, given the standard deviation is $42.5, and the mean price of textbooks is \$115, our confidence interval will have a length of \$`r al`
+
+##Question 4
+
+4.  (Exercise 6.7, Chapter 6 of SMSS, Agresti 2018) According to a union agreement, the mean income for all senior-level workers in a large service company equals \$500 per week. A representative of a women's group decides to analyze whether the mean income μ for female employees matches this norm. For a random sample of nine female employees, ȳ = \$410 and s = 90.
+
+Test whether the mean income of female employees differs from \$500 per week. Include assumptions, hypotheses, test statistic, and P-value. Interpret the result. Report the P-value for Ha : μ \< 500. Interpret. Report and interpret the P-value for H a: μ \> 500. (Hint: The P-values for the two possible one-sided tests must sum to 1.)
+
+```{r q4, echo = TRUE}
+bar = 410
+s = 90
+n = 9
+mu = 500
+
+tscore <- (bar - mu) / (s / 9^.5)
+
+p_value_l <- pt(tscore, df = n - 1, lower.tail = TRUE)
+cat("P-value is:", p_value_l)
+
+p_value_h <- pt(tscore, df = n - 1, lower.tail = FALSE)
+cat("P-value is:", p_value_h)
+```
+
+Hypothesis 1:
+
+Ho: μ = 500\
+Ha: μ \< 500
+
+Test Statistic: `r tscore`
+
+`r p_value_l`
+
+We reject the null hypothesis and conclude that the mean salaries of female senior employees are not statistically significantly less than the \$500 / week of senior employees.
+
+Hypothesis 2:
+
+Ho: μ = 500\
+Ha: μ \> 500
+
+Test Statistic: `r tscore`
+
+`r p_value_h`
+
+We fail to reject the null hypothesis and conclude that the mean salaries of female senior employees are not statistically significantly higher than the \$500 / week of senior employees.
+
+##Question 5
+
+5.  (Exercise 6.23, Chapter 6 of SMSS, Agresti 2018) Jones and Smith separately conduct studies to test H0: μ = 500 against Ha : μ ≠ 500, each with n = 1000. Jones gets ȳ = 519.5, with se = 10.0. Smith gets ȳ = 519.7, with se = 10.0. Show that t = 1.95 and P-value = 0.051 for Jones. Show that t = 1.97 and P-value = 0.049 for Smith. Using α = 0.05, for each study indicate whether the result is "statistically significant." Using this example, explain the misleading aspects of reporting the result of a test as "P ≤ 0.05" versus "P \> 0.05", or as "reject H0" versus "Do not reject H0 ," without reporting the actual P-value.
+
+```{r q5, echo = TRUE}
+jones_t <- round(pt(q=1.95, df=999, lower.tail = FALSE) * 2, 3)
+smith_t <- round(pt(q=1.97, df=999, lower.tail = FALSE) * 2, 3)
+```
+
+T Statistic for Jones = (519.5 - 500) / 10 = 1.95, p-value = `r jones_t`\
+T Statistic for Smith = (519.7 - 500) / 10 = 1.97, p-value = `r smith_t`
+
+Using an α = 0.05\
+The Jones study is not considered to be statistically significant, given the p-value for the test statistic is .051, which is barely above the .05 threshold.\
+The Smith study considered to be statistically significant, given the p-value for the test statistic is .049, which is barely above the .05 threshold.
+
+For this example, if a result was listed as "P ≤ 0.05", the range of p-values for Smith's study can range from .05 to almost 0, with the actual p-value being .049.. If a result was listed as "P \> 0.05", the range of p-values for Jones' study can range from .05 to 1, while the actual p-value was .051. These ranges diminish the reality that these studies were barely statistically significant or not, which would lead to possibly diminishing the motivation to look further into these studies and the nuances of the study which led to producing said result. 
+
+
+##Question 6
+
+6.  Are the taxes on gasoline very high in the United States? According to the American Petroleum Institute, the per gallon federal tax that was levied on gasoline was 18.4 cents per gallon. However, state and local taxes vary over the same period. The sample data of gasoline taxes for 18 large cities is given below in the variable called gas_taxes.
+
+gas_taxes \<- c(51.27, 47.43, 38.89, 41.95, 28.61, 41.29, 52.19, 49.48, 35.02, 48.13, 39.28, 54.41, 41.66, 30.28, 18.49, 38.72, 33.41, 45.02)
+
+Is there enough evidence to conclude at a 95% confidence level that the average tax per gallon of gas in the US in 2005 was less than 45 cents? Explain.
+
+```{r q6, echo = TRUE}
+gas_taxes <- c(51.27, 47.43, 38.89, 41.95, 28.61, 41.29, 52.19, 49.48, 35.02, 48.13, 39.28, 54.41, 41.66, 30.28, 18.49, 38.72, 33.41, 45.02)
+
+gas_m <- mean(gas_taxes)
+gas_sd <- (var(gas_taxes))^.5
+
+gas_l <- gas_m - (1.96 * (gas_sd/length(gas_taxes)^.5))
+gas_g <- gas_m + (1.96 * (gas_sd/length(gas_taxes)^.5))
+```
+
+Mean = `r gas_m` Standard Deviation = `r gas_sd`
+
+$40.86 \pm 1.96 (9.31/sqrt(18))$ = (`r gas_l`, `r gas_g`)
+
+At the 95% confidence level, there is not enough evidence to conclude that the average tax per gallon of gas was less than \$.45. The upper end of the confidence interval is just over \$.45.
